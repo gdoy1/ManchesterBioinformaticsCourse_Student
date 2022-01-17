@@ -3,6 +3,7 @@ Image processing in Python: assignment
 Ben Bunce & George Doyle
 """
 
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
@@ -56,6 +57,7 @@ def rotateImage(shifts, rotation):
 
     plt.imshow(lungs, cmap="Greys_r")
     plt.imshow(rotated_image, alpha=0.25, cmap="Greys_r")
+
     plt.show()
 
     # floating.set_data(lungs2)
@@ -64,5 +66,26 @@ def rotateImage(shifts, rotation):
 rotateImage([0,0], 0)
 rotateImage([-20,-50], -3)  # Coordinates required for both rotation and alignment
 
+def on_press(event):
+    print('moved', event.key)
+    sys.stdout.flush()
+    yup = 0
+    if event.key == 'x':
+        visible = xl.get_visible()
+        xl.set_visible(not visible)
+        fig.canvas.draw()
+    if event.key == 'up':
+        yup+=1
+        rotateImage([yup,0],0)
 
 
+# Fixing random state for reproducibility
+np.random.seed(19680801)
+
+fig, ax = plt.subplots()
+fig.canvas.mpl_connect('key_press_event', on_press)
+
+#ax.plot(np.random.rand(12), np.random.rand(12), 'go')
+#xl = ax.set_xlabel('easy come, easy go')
+#ax.set_title('Press a key')
+#plt.show()
