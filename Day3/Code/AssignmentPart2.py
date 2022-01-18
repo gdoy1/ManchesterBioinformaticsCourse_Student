@@ -14,13 +14,6 @@ lungs = imread('lungs.jpg', as_gray=True)  # load image into skimage
 lungs2 = imread('lungs2.jpg', as_gray=True)  # load image into skimage
 lungs3 = imread('lungs3.jpg', as_gray=True)  # load image into skimage
 
-'''plt.imshow(lungs)
-plt.imshow(lungs2)
-plt.show()'''
-
-'''plt.imshow(lungs, cmap="Greys_r")
-plt.imshow(lungs2, alpha=0.25, cmap="Greys_r")
-plt.show()'''
 
 def shiftImage(shifts):
 
@@ -31,16 +24,10 @@ def shiftImage(shifts):
 
     shifted_image = interpolation.shift(lungs2, (x, y), mode="nearest")
 
-
     plt.imshow(lungs, cmap="Greys_r")
     plt.imshow(shifted_image, alpha=0.25, cmap="Greys_r")
     plt.show()
 
-    # floating.set_data(lungs2)
-    # fig.canvas.draw()
-
-# shiftImage([-10,-20])
-# shiftImage([-15,-40])  #Coordinates required to align
 
 def rotateImage(shifts, rotation):
 
@@ -55,37 +42,48 @@ def rotateImage(shifts, rotation):
             angle=rotation)
 
 
-    plt.imshow(lungs, cmap="Greys_r")
-    plt.imshow(rotated_image, alpha=0.25, cmap="Greys_r")
+    return(plt.imshow(lungs, cmap="Greys_r"),
+    plt.imshow(rotated_image, alpha=0.25, cmap="Greys_r"))
 
     plt.show()
 
-    # floating.set_data(lungs2)
-    # fig.canvas.draw()
-
-rotateImage([0,0], 0)
-rotateImage([-20,-50], -3)  # Coordinates required for both rotation and alignment
 
 def on_press(event):
     print('moved', event.key)
     sys.stdout.flush()
-    yup = 0
-    if event.key == 'x':
-        visible = xl.get_visible()
-        xl.set_visible(not visible)
-        fig.canvas.draw()
+    global x, y, turn
     if event.key == 'up':
-        yup+=1
-        rotateImage([yup,0],0)
+        y+=5
+        rotateImage([y,0],0)
+    if event.key == 'down':
+        y-=5
+        rotateImage([y,0],0)
+    if event.key == 'left':
+        x+=5
+        rotateImage([0,x],0)
+    if event.key == 'right':
+        x-=5
+        rotateImage([0,x],0)
+    if event.key == 'pageup':
+        turn+=3
+        rotateImage([x,y],turn)
+    if event.key == 'pagedown':
+        turn-+3
+        rotateImage([x,y],turn)
 
+    fig.canvas.draw()
 
-# Fixing random state for reproducibility
-np.random.seed(19680801)
+# shiftImage([-10,-20])
+# shiftImage([-15,-40])  # Coordinates required to align
+
+# rotateImage([0,0], 0)
+# rotateImage([-20,-50], -3)  # Coordinates required for both rotation and alignment
 
 fig, ax = plt.subplots()
 fig.canvas.mpl_connect('key_press_event', on_press)
 
-#ax.plot(np.random.rand(12), np.random.rand(12), 'go')
-#xl = ax.set_xlabel('easy come, easy go')
-#ax.set_title('Press a key')
-#plt.show()
+x, y, turn = 0, 0, 0
+ax = rotateImage([0,0], 0)
+# xl = ax.set_xlabel('easy come, easy go')
+# ax.set_title('Press a key')
+plt.show()
