@@ -3,6 +3,7 @@ Image processing in Python: assignment
 Ben Bunce & George Doyle
 """
 
+from curses import reset_shell_mode
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,41 +37,38 @@ def rotateImage(shifts, rotation):
     global lungs
     global lungs3
 
-    shifted_image = interpolation.shift(lungs3, (x, y), mode="nearest")
-    rotated_image = scipy.ndimage.interpolation.rotate(
-            input=shifted_image,
-            angle=rotation)
-
+    image = interpolation.shift(lungs3, (x, y), mode="nearest")
+    image = rotate(image, rotation, reshape=False)
 
     return(plt.imshow(lungs, cmap="Greys_r"),
-    plt.imshow(rotated_image, alpha=0.25, cmap="Greys_r"))
+    plt.imshow(image, alpha=0.25, cmap="Purples_r"))
 
-    plt.show()
 
 
 def on_press(event):
     print('moved', event.key)
     sys.stdout.flush()
-    global x, y, turn
+    global x, y, rotation
     if event.key == 'up':
-        y+=5
-        rotateImage([y,0],0)
-    if event.key == 'down':
         y-=5
         rotateImage([y,0],0)
+    if event.key == 'down':
+        y+=5
+        rotateImage([y,0],0)
     if event.key == 'left':
-        x+=5
-        rotateImage([0,x],0)
-    if event.key == 'right':
         x-=5
         rotateImage([0,x],0)
+    if event.key == 'right':
+        x+=5
+        rotateImage([0,x],0)
     if event.key == 'pageup':
-        turn+=3
-        rotateImage([x,y],turn)
+        rotation+=1
+        rotateImage([x,y],rotation)
     if event.key == 'pagedown':
-        turn-+3
-        rotateImage([x,y],turn)
+        rotation-=1
+        rotateImage([x,y],rotation)
 
+    print(f"X={x}, Y={y}, Rotation={rotation}")
     fig.canvas.draw()
 
 # shiftImage([-10,-20])
@@ -82,7 +80,7 @@ def on_press(event):
 fig, ax = plt.subplots()
 fig.canvas.mpl_connect('key_press_event', on_press)
 
-x, y, turn = 0, 0, 0
+x, y, rotation = 0, 0, 0
 ax = rotateImage([0,0], 0)
 # xl = ax.set_xlabel('easy come, easy go')
 # ax.set_title('Press a key')
